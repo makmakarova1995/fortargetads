@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TargetADS — что хочется доработать (медийка)</title>
+<style>
+  :root{
+    --ink:#1c1c1e; --body:#33333a; --muted:#8a8a90; --accent:#5b5bd6; --hair:#eeeef2;
+    --taBorder:#edeef2; --taMuted:#9aa2b1; --taVal:#6b7280; --taName:#2f3847; --taBlue:#4c8dff;
+  }
+  *{box-sizing:border-box}
+  body{font-family:'Inter','SF Pro Text',-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:#fff;color:var(--body);margin:0;line-height:1.62;font-size:15px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:960px;margin:0 auto;padding:56px 24px 96px}
+  h1{font-size:26px;font-weight:700;color:var(--ink);letter-spacing:-.01em;margin:0 0 48px}
+  .req{padding-top:34px;margin-top:34px;border-top:1px solid var(--hair)}
+  .req:first-of-type{padding-top:0;margin-top:0;border-top:none}
+  .req > h3{font-size:19px;font-weight:700;color:var(--ink);letter-spacing:-.01em;margin:0 0 18px;line-height:1.35;display:flex;gap:10px;align-items:baseline}
+  .req > h3 .num{color:var(--accent);font-weight:800}
+  .star{margin-left:auto;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--accent)}
+  .blk{margin:0 0 18px}
+  .label{display:block;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);margin:0 0 5px}
+  .body{color:var(--body)}
+  .body p{margin:0 0 8px}
+  .body p:last-child{margin-bottom:0}
+  .body ul{margin:4px 0 8px;padding-left:20px}
+  .body li{margin:3px 0}
+  .hl{color:var(--ink);font-weight:600}
+  .shot{margin-top:16px}
+  .shot img{display:block;width:100%;height:auto;border-radius:10px;box-shadow:0 1px 0 var(--hair),0 6px 24px -12px rgba(0,0,0,.18)}
+
+  /* ===== TargetADS screen (точные цвета/шрифт) ===== */
+  .ta{background:#f7f9fc;border-radius:16px;padding:14px;margin-top:16px}
+  .ta-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+  .ta-pill{display:inline-flex;align-items:center;gap:9px;background:#fff;border:1px solid #e6e9f2;border-radius:13px;padding:10px 13px;font-size:13px;color:var(--taName)}
+  .ta-pill .ic{width:16px;height:16px;border-radius:5px;background:#e8f0ff;flex:none}
+  .cv{color:#c2c8d2;font-size:10px}
+  .ta-funnel{width:40px;height:40px;border-radius:12px;background:#e8f0ff;display:inline-flex;align-items:center;justify-content:center;color:var(--taBlue);font-size:15px}
+  .ta-x{width:40px;height:40px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;color:#c2c8d2;font-size:16px}
+  .ta-report{background:#fff;border:1px solid var(--taBorder);border-radius:16px;overflow:hidden}
+  .ta-rhead{display:flex;align-items:center;gap:10px;padding:13px 15px}
+  .ta-title{background:#f4f6fa;border-radius:11px;padding:10px 14px;font-size:13px;color:var(--taName);display:inline-flex;gap:12px;align-items:center}
+  .ta-tools{margin-left:auto;display:inline-flex;gap:10px;align-items:center}
+  .ta-gear{color:#aab2c0;font-size:16px}
+  .ta-kebab{background:#1f2430;color:#fff;border-radius:10px;width:34px;height:30px;display:inline-flex;align-items:center;justify-content:center;font-size:16px}
+  .ta-filter{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 15px;border-top:1px solid #f1f3f7;border-bottom:1px solid #f1f3f7;background:#fbfcfe}
+  .ta-fsel{display:inline-flex;gap:20px;align-items:center;background:#fff;border:1px solid #e6e9f2;border-radius:10px;padding:9px 13px;font-size:12.5px;color:#5b6472}
+  .ta-fval{background:#fff;border:1px solid #e6e9f2;border-radius:10px;padding:9px 13px;font-size:12.5px;color:var(--taName)}
+  .ta-apply{margin-left:auto;background:#eaf1ff;color:var(--taBlue);border-radius:10px;padding:9px 18px;font-size:12.5px;font-weight:600}
+  .ta-scroll{overflow-x:auto}
+  table.ta-t{border-collapse:collapse;width:100%;font-size:13px;min-width:700px}
+  .ta-t th,.ta-t td{text-align:left;padding:12px 16px;border-bottom:1px solid #f2f3f7;white-space:nowrap}
+  .ta-t thead th{color:var(--taMuted);font-weight:400;font-size:13px}
+  .ta-t thead th.new{color:#7a70d8}
+  .ta-t td{color:var(--taVal)}
+  .ta-t td.new{background:#faf9ff}
+  .ta-t tbody tr:last-child td{border-bottom:none}
+  .ta-base td{color:#b3b9c4}
+  .ta-sum td{background:#eef4ff;font-weight:700;color:#1c1c1e;border-top:1px solid #d3e2fb;border-bottom:1px solid #d3e2fb}
+  .ta-red{color:#d93636}
+  .ta-t td.b{white-space:nowrap}
+  .ta-t td.b .f{display:inline-block;height:20px;background:#bcd6fb;border-radius:6px;vertical-align:middle;margin-right:9px}
+  .ta-t td.b .f.red{background:#f5c2c2}
+  .ta-t td.b .v{vertical-align:middle;color:#6b7280}
+  .tree{display:inline-flex;align-items:center;gap:9px}
+  .arw{width:12px;text-align:center;color:#aab2c0;font-size:10px;flex:none}
+  .l0{padding-left:14px}.l1{padding-left:40px}.l2{padding-left:66px}.l3{padding-left:92px}
+  .nm0{font-weight:600;color:#1c1c1e}.nm1{color:var(--taName)}.nm2{color:#66718a}.nm3{color:#98a2b3}
+  .ta-foot{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;border-top:1px solid #f2f3f7;font-size:12.5px;color:var(--taMuted)}
+  .ta-rows .sel{background:#fff;border:1px solid #e6e9f2;border-radius:8px;padding:4px 9px;margin-left:6px}
+  .ta-page{display:inline-flex;gap:4px;align-items:center}
+  .ta-page span{min-width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;padding:0 5px}
+  .ta-page .cur{background:#eaf1ff;color:#3b7bff;font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Что хочется доработать в отчетах TargetADS ❤️</h1>
+
+  <section class="req">
+    <h3><span class="num">1.</span> Свой отчет с любыми метриками — все подрядчики в одном дашике <span class="star">главное</span></h3>
+    <div class="blk"><span class="label">Ситуация</span><div class="body">
+      <p>Это главное: такая правка решила бы все проблемы, не пришлось бы прыгать по разным дашикам и отчетам.</p>
+      <p>Было бы удобно в одном окне забирать всю нужную статистику с разбивкой по источнику и размещению.</p>
+      <p>Мне нужно создать свой отчет — кастомный, со всеми метриками, которые я еженедельно заполняю в своем отчете маркетолога:</p>
+      <ul>
+        <li>все из дашика по CR Lift;</li>
+        <li>доля IVT в %;</li>
+        <li>доля видимых показов;</li>
+        <li>пост-вью конверсии из дашборда по e-commerce;</li>
+        <li>сумма пост-вью конверсий.</li>
+      </ul>
+      <p>И выводить всех подрядчиков в один дашик с нужными мне метриками.</p>
+    </div></div>
+    <div class="blk"><span class="label">Проблема</span><div class="body">
+      <p>Когда раз в неделю заполняю отчет, приходится прыгать:</p>
+      <ul>
+        <li>по разным дашбордам в Таргет адсе + делать кастомные отчеты по подрядчикам;</li>
+        <li>собирать данные в Метрике;</li>
+        <li>собирать данные от подрядчиков.</li>
+      </ul>
+      <ul>
+        <li>также бывает, что пост-вью оплаты из дашборда по электронной коммерции и оплаты по лифтам показывают разные результаты, можно было бы кросс-чекать в таком дашборде.</li>
+      </ul>
+    </div></div>
+    <div class="blk"><span class="label">Решение</span><div class="body">
+      <p>Сделать формат, как в привычных рекламных кабинетах (ВК, TikTok Ads и др.), где видим и на уровне общем, и в разбивке.</p>
+      <p>1) Я выбираю в фильтрах:</p>
+      <ul>
+        <li>источник (это подрядчик у нас), чтобы видеть в целом по подрядчику;</li>
+        <li>размещение (это аналог рк, чтобы видеть в разбивке).</li>
+      </ul>
+      <p>2) Вижу стату по отдельности по каждому размещению и в целом по всем общий результат.</p>
+      <p>Тк мне нужно и сравнивать подрядчиков между собой, и в сумме смотреть, как отработали, например:</p>
+      <ul>
+        <li>только статичные креативы;</li>
+        <li>только видео креативы.</li>
+      </ul>
+      <p>Сейчас приходится выгружать стату в иксельку, самой считать.</p>
+    </div></div>
+
+    <div class="ta">
+      <div class="ta-bar">
+        <span class="ta-pill"><span class="ic"></span>2026-09-01 — 2026-09-11 <span class="cv">▾</span></span>
+        <span class="ta-pill"><span class="ic"></span>Last Impression <span class="cv">▾</span></span>
+        <span class="ta-pill"><span class="ic"></span>30 дней <span class="cv">▾</span></span>
+        <span class="ta-pill"><span class="ic"></span>Кампания <span class="cv">▾</span></span>
+        <span class="ta-funnel">▽</span>
+        <span class="ta-x">✕</span>
+      </div>
+      <div class="ta-report">
+        <div class="ta-rhead">
+          <span class="ta-tools"><span class="ta-gear">⚙</span><span class="ta-kebab">⋮</span></span>
+        </div>
+        <div class="ta-scroll">
+        <table class="ta-t">
+          <thead><tr>
+            <th>Группа</th><th>Пользователи</th><th>Целевые действия</th><th>CR (пользователи)</th><th>Uplift</th>
+            <th class="new">Доля IVT</th><th class="new">Доля видимых показов</th><th class="new">Пост-вью оплаты</th><th class="new">Пост-вью сумма оплат</th>
+          </tr></thead>
+          <tbody>
+            <tr class="ta-base"><td class="l0"><span class="tree"><span class="arw"></span>No see</span></td><td>989,21 тыс.</td><td>133,23 тыс.</td><td>4,8%</td><td>0,0%</td><td class="new">—</td><td class="new">—</td><td class="new">—</td><td class="new">—</td></tr>
+            <tr><td class="l0"><span class="tree"><span class="arw">▾</span><span class="nm0">Программатик 1</span></span></td><td>20,0 тыс.</td><td>401</td><td>2,0%</td><td>−52%</td><td class="new">3,4%</td><td class="new">85%</td><td class="new">120</td><td class="new">1,2 млн ₽</td></tr>
+            <tr><td class="l1"><span class="tree"><span class="arw">▾</span><span class="nm1">крео статика</span></span></td><td>8,0 тыс.</td><td>161</td><td>2,0%</td><td>−49%</td><td class="new"><span class="ta-red">4,7%</span></td><td class="new">79%</td><td class="new">40</td><td class="new">420 тыс. ₽</td></tr>
+            <tr><td class="l2"><span class="tree"><span class="arw"></span><span class="nm2">крео статика спб</span></span></td><td>5,0 тыс.</td><td>95</td><td>1,9%</td><td>−52%</td><td class="new"><span class="ta-red">4,5%</span></td><td class="new">80%</td><td class="new">25</td><td class="new">260 тыс. ₽</td></tr>
+            <tr><td class="l2"><span class="tree"><span class="arw"></span><span class="nm2">крео статика мск</span></span></td><td>3,0 тыс.</td><td>66</td><td>2,2%</td><td>−45%</td><td class="new"><span class="ta-red">5,0%</span></td><td class="new"><span class="ta-red">78%</span></td><td class="new">15</td><td class="new">160 тыс. ₽</td></tr>
+            <tr><td class="l1"><span class="tree"><span class="arw">▾</span><span class="nm1">крео видео</span></span></td><td>12,0 тыс.</td><td>240</td><td>2,0%</td><td>−55%</td><td class="new">2,5%</td><td class="new">90%</td><td class="new">80</td><td class="new">780 тыс. ₽</td></tr>
+            <tr><td class="l2"><span class="tree"><span class="arw"></span><span class="nm2">крео видео спб</span></span></td><td>7,0 тыс.</td><td>150</td><td>2,1%</td><td>−52%</td><td class="new">2,4%</td><td class="new">91%</td><td class="new">48</td><td class="new">470 тыс. ₽</td></tr>
+            <tr><td class="l2"><span class="tree"><span class="arw"></span><span class="nm2">крео видео мск</span></span></td><td>5,0 тыс.</td><td>90</td><td>1,8%</td><td>−59%</td><td class="new">2,7%</td><td class="new">88%</td><td class="new">32</td><td class="new">310 тыс. ₽</td></tr>
+            <tr><td class="l0"><span class="tree"><span class="arw">▸</span><span class="nm0">Программатик 2</span></span></td><td>15,0 тыс.</td><td>300</td><td>2,2%</td><td>−38%</td><td class="new">4,0%</td><td class="new">83%</td><td class="new">95</td><td class="new">900 тыс. ₽</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <div class="ta-foot">
+          <span class="ta-rows">Строк: <span class="sel">30 ▾</span></span>
+          <span class="ta-page"><span>‹</span><span class="cur">1</span><span>2</span><span>3</span><span>4</span><span>…</span><span>12</span><span>›</span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="req">
+    <h3><span class="num">2.</span> Фильтр в CR Lift отдельно по каждому каналу и вместе с выбранными каналами</h3>
+    <div class="blk"><span class="label">Ситуация</span><div class="body">
+      <p>Мне нужно смотреть CR Lift отдельно по каждому каналу и в сумме с другими.</p>
+      <p>Например, мы запускаем:</p>
+      <ul>
+        <li>Программатик 1 видео,</li>
+        <li>Программатик 1 статика и еще что-то,</li>
+      </ul>
+      <p>и такие рк еще по нескольким подрядчикам.</p>
+      <p>Мне нужно видеть:</p>
+      <ul>
+        <li>как в отдельности отрабатывает каждый подрядчик и его рк;</li>
+        <li>как отрабатывают все вместе.</li>
+      </ul>
+      <p>Потому что:</p>
+      <ul>
+        <li>если у одного подрядчика просадка (работает первый месяц), а у второго идет выше KPI, то в среднем будет ок;</li>
+        <li>или хочу сравнить, как отрабатывает формат статики и видео по каждому подрядчику, и увидеть, что видео у всех минусит, а статика у всех в плюс.</li>
+      </ul>
+      <p>Также в Таргет адс работают другие команды, и больше половины источников мне не нужны, хотелось бы сделать фильтр только по своим.</p>
+    </div></div>
+    <div class="blk"><span class="label">Проблема</span><div class="body">
+      <p>Сейчас такого фильтра по каналу нет.</p>
+      <p>Поэтому, чтобы посмотреть каждый канал отдельно и в сумме, мне приходится выгружать все в иксельку и сводить это все руками.</p>
+    </div></div>
+    <div class="blk"><span class="label">Решение</span><div class="body">
+      <p>Добавить фильтр по каналу в CR Lift, чтобы смотреть отдельно по каждому каналу и вместе с выбранными.</p>
+    </div></div>
+
+    <div class="ta">
+      <div class="ta-bar">
+        <span class="ta-pill"><span class="ic"></span>2026-09-01 — 2026-09-11 <span class="cv">▾</span></span>
+        <span class="ta-pill"><span class="ic"></span>Last Impression <span class="cv">▾</span></span>
+        <span class="ta-pill"><span class="ic"></span>Кампания <span class="cv">▾</span></span>
+        <span class="ta-funnel">▽</span>
+        <span class="ta-x">✕</span>
+      </div>
+      <div class="ta-report">
+        <div class="ta-rhead">
+          <span class="ta-title">Влияние медийных кампаний на конверсию <span class="cv">▾</span></span>
+          <span class="ta-tools"><span class="ta-gear">⚙</span><span class="ta-kebab">⋮</span></span>
+        </div>
+        <div class="ta-filter">
+          <span class="ta-fsel">Формат <span class="cv">▾</span></span>
+          <span class="ta-fsel">равно <span class="cv">▾</span></span>
+          <span class="ta-fval">статика</span>
+          <span class="ta-apply">Применить</span>
+        </div>
+        <div class="ta-scroll">
+        <table class="ta-t">
+          <thead><tr>
+            <th>Группа</th><th>Пользователи</th><th>Целевые действия</th><th>CR (пользователи)</th><th>Uplift</th>
+          </tr></thead>
+          <tbody>
+            <tr class="ta-sum"><td class="l0"><span class="tree"><span class="arw"></span>Итого по выбранным · только статика</span></td><td>16,0 тыс.</td><td>314</td><td>2,0%</td><td>−51%</td></tr>
+            <tr class="ta-base"><td class="l0"><span class="tree"><span class="arw"></span>No see</span></td><td>989,21 тыс.</td><td>133,23 тыс.</td><td>4,8%</td><td>0,0%</td></tr>
+            <tr><td class="l0"><span class="tree"><span class="arw">▾</span><span class="nm0">Программатик 1</span></span></td><td>8,0 тыс.</td><td>161</td><td>2,0%</td><td>−49%</td></tr>
+            <tr><td class="l1"><span class="tree"><span class="arw"></span><span class="nm1">крео статика спб</span></span></td><td>5,0 тыс.</td><td>95</td><td>1,9%</td><td>−52%</td></tr>
+            <tr><td class="l1"><span class="tree"><span class="arw"></span><span class="nm1">крео статика мск</span></span></td><td>3,0 тыс.</td><td>66</td><td>2,2%</td><td>−45%</td></tr>
+            <tr><td class="l0"><span class="tree"><span class="arw">▾</span><span class="nm0">Программатик 2</span></span></td><td>8,0 тыс.</td><td>153</td><td>1,9%</td><td>−52%</td></tr>
+            <tr><td class="l1"><span class="tree"><span class="arw"></span><span class="nm1">крео статика спб</span></span></td><td>5,0 тыс.</td><td>90</td><td>1,8%</td><td>−55%</td></tr>
+            <tr><td class="l1"><span class="tree"><span class="arw"></span><span class="nm1">крео статика мск</span></span></td><td>3,0 тыс.</td><td>63</td><td>2,1%</td><td>−48%</td></tr>
+          </tbody>
+        </table>
+        </div>
+        <div class="ta-foot">
+          <span class="ta-rows">Строк: <span class="sel">30 ▾</span></span>
+          <span class="ta-page"><span>‹</span><span class="cur">1</span><span>2</span><span>3</span><span>4</span><span>…</span><span>12</span><span>›</span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="req">
+    <h3><span class="num">3.</span> Лифт за 2–3–4 месяца</h3>
+    <div class="blk"><span class="label">Ситуация</span><div class="body">
+      <p>Мне нужно оценивать лифт за 2–3–4 месяца — в медийке мы почти никогда не оцениваем лифт за месяц.</p>
+    </div></div>
+    <div class="blk"><span class="label">Проблема</span><div class="body">
+      <p>Раньше лифты можно было смотреть только за 30 дней, а за 90 нельзя, например.</p>
+      <p>Также приходилось выгружать себе в иксельку, что-то самой сводить нужный отчет, считать в сумме по подрядчику.</p>
+    </div></div>
+    <div class="blk"><span class="label">Решение</span><div class="body">
+      <p>Чтобы можно было смотреть лифт за 90 дней и больше, за 2–3–4 месяца.</p>
+    </div></div>
+  </section>
+
+  <section class="req">
+    <h3><span class="num">4.</span> Закрепить выбор колонок в лифтах</h3>
+    <div class="blk"><span class="label">Ситуация</span><div class="body">
+      <p>Мне нужно, чтобы в лифтах всегда стояли мои колонки по пользователям.</p>
+      <p>Обращаюсь к отчету, бывает, несколько раз в неделю: сравнить подрядчиков, кого-то забыла посмотреть, кому-то из подрядчиков надо цифры скинуть.</p>
+    </div></div>
+    <div class="blk"><span class="label">Проблема</span><div class="body">
+      <p>Каждый раз надо выбирать колонки по пользователям вместо сессий.</p>
+    </div></div>
+    <div class="blk"><span class="label">Решение</span><div class="body">
+      <p>Закрепить выбор колонок в лифтах. У вас уже есть пин на одну колонку, сделать такой же, но на всю раскладку.</p>
+    </div></div>
+    <div class="shot"><img src="img/pin-columns.png" alt="Пин раскладки колонок"></div>
+  </section>
+
+  <section class="req">
+    <h3><span class="num">5.</span> Разделение IVT по размещениям</h3>
+    <div class="blk"><span class="label">Ситуация</span><div class="body">
+      <p>Мне нужно видеть стату по IVT отдельно по разным размещениям по каждому подрядчику.</p>
+      <p>У меня 4 подрядчика, у каждого 1-2-3 размещения.</p>
+    </div></div>
+    <div class="blk"><span class="label">Проблема</span><div class="body">
+      <p>В дашборде, где мы смотрим IVT, нельзя выбрать разделение по размещениям — мне надо отдельно тыкать на каждое размещение, чтобы отдельно посмотреть IVT.</p>
+      <p>Вместе смотреть некорректно, а бывает, что по какому-то определенному размещению больше фрода, тогда я пишу подрядчикам, на что обратить внимание.</p>
+    </div></div>
+    <div class="blk"><span class="label">Решение</span><div class="body">
+      <p>Разрез по размещениям в дашборде IVT, чтобы видеть все размещения сразу. Возможно, это вообще больше про кастомный дашик (пункт 1): чтобы я могла выбрать и размещения, и подрядчика целиком, и посчитать вместе и отдельно.</p>
+    </div></div>
+
+    <div class="ta">
+      <div class="ta-bar">
+        <span class="ta-pill"><span class="ic"></span>2026-09-01 — 2026-09-11 <span class="cv">▾</span></span>
+        <span class="ta-pill"><span class="ic"></span>Last Impression <span class="cv">▾</span></span>
+        <span class="ta-pill"><span class="ic"></span>Кампания <span class="cv">▾</span></span>
+        <span class="ta-funnel">▽</span>
+        <span class="ta-x">✕</span>
+      </div>
+      <div class="ta-report">
+        <div class="ta-rhead">
+          <span style="font-size:12px;font-weight:700;letter-spacing:.04em;color:#98a2b3">ПО КАМПАНИЯМ</span>
+          <span class="ta-tools"><span class="ta-gear">⚙</span><span class="ta-kebab">⋮</span></span>
+        </div>
+        <div class="ta-scroll">
+        <table class="ta-t">
+          <thead><tr>
+            <th>Название</th><th>Показы</th><th>Клики</th><th>Целевые действия</th><th>Доля IVT</th>
+          </tr></thead>
+          <tbody>
+            <tr><td class="l0"><span class="tree"><span class="arw">▾</span><span class="nm0">Программатик 1</span></span></td>
+              <td class="b"><span class="f" style="width:140px"></span><span class="v">935 тыс.</span></td>
+              <td class="b"><span class="f" style="width:140px"></span><span class="v">10,2 тыс.</span></td>
+              <td class="b"><span class="f" style="width:140px"></span><span class="v">584</span></td>
+              <td class="b"><span class="f" style="width:96px"></span><span class="v">6,1%</span></td></tr>
+            <tr><td class="l1"><span class="tree"><span class="arw"></span><span class="nm1">крео видео</span></span></td>
+              <td class="b"><span class="f" style="width:78px"></span><span class="v">520 тыс.</span></td>
+              <td class="b"><span class="f" style="width:82px"></span><span class="v">6,0 тыс.</span></td>
+              <td class="b"><span class="f" style="width:77px"></span><span class="v">320</span></td>
+              <td class="b"><span class="f" style="width:71px"></span><span class="v">4,5%</span></td></tr>
+            <tr><td class="l1"><span class="tree"><span class="arw"></span><span class="nm1">крео статика спб</span></span></td>
+              <td class="b"><span class="f" style="width:38px"></span><span class="v">250 тыс.</span></td>
+              <td class="b"><span class="f" style="width:36px"></span><span class="v">2,6 тыс.</span></td>
+              <td class="b"><span class="f" style="width:38px"></span><span class="v">160</span></td>
+              <td class="b"><span class="f red" style="width:113px"></span><span class="v ta-red">7,2%</span></td></tr>
+            <tr><td class="l1"><span class="tree"><span class="arw"></span><span class="nm1">крео статика мск</span></span></td>
+              <td class="b"><span class="f" style="width:25px"></span><span class="v">165 тыс.</span></td>
+              <td class="b"><span class="f" style="width:22px"></span><span class="v">1,6 тыс.</span></td>
+              <td class="b"><span class="f" style="width:25px"></span><span class="v">104</span></td>
+              <td class="b"><span class="f red" style="width:140px"></span><span class="v ta-red">8,9%</span></td></tr>
+          </tbody>
+        </table>
+        </div>
+        <div class="ta-foot">
+          <span class="ta-rows">Строк: <span class="sel">30 ▾</span></span>
+          <span class="ta-page"><span>‹</span><span class="cur">1</span><span>2</span><span>›</span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
